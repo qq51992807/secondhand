@@ -1,0 +1,35 @@
+
+
+/* Clear float style*/
+.clearfix:before,
+.clearfix:after{
+    content:"";
+    display:table;
+}
+
+.clearfix:after{
+    clear:both;
+}
+/*End clear float style */
+
+#introduction ul li {
+    background:#efefef;
+    border-radius: 4px;
+    -moz-border-radius:4px;
+    -o-border-radius:4px;
+    -webkit-border-radius:4px;
+    color: #666666;
+    font-size: 11px;
+    margin-bottom: 10px;
+    margin-top: 9px;
+    padding: 6px 44px 5px 10px;
+    border-left:3px solid #cccccc;
+}
+
+#introduction ul li span{
+    font-weight:bold;
+}
+.info{
+    float: center ;
+    margin-right:38px;
+}

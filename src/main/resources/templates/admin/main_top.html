@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+</head>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" href="/static/css/matrix-style.css" />
+<link rel="stylesheet" href="/static/css/matrix-media.css" />
+<link rel="stylesheet" href="/static/font-awesome/css/font-awesome.css" />
+
+<body th:fragment="top">
+	<!--Header-part-->
+
+	<div id="headers"  >
+
+	   	<div style="height:50px;background-color:#323232;">
+	   	<div style="float:left;background-color:#FFB53E;height:50px;width:220px;">
+	   	<a href="/admin/indexs">
+	   	<p style="font-size:30px;text-align:center;">首页</p>
+	   	</a>
+	   	</div>
+	   	<h1 style=" text-align:center;margin-top: 10px;margin-bottom: 0px;">校园闲置物品交易平台管理系统</h1>
+	   	</div>
+
+
+	</div>
+	<!--close-Header-part-->
+	<!--top-Header-menu-->
+	<div id="user-nav" class="navbar navbar-inverse" >
+		<ul class="nav" style="height:50px;">
+			<li class="dropdown" id="profile-messages"><a title="" href="#"
+				data-toggle="dropdown" data-target="#profile-messages"
+				class="dropdown-toggle"> <i class="icon icon-user"></i>
+				<span class="text" th:text="${session.admin!=null?session.admin.userName:''}"></span>
+				<b class="caret"></b> </a>
+				<ul class="dropdown-menu">
+					<li><a href="/admin/info"><i class="icon-user"></i>个人信息</a></li>
+					<li class="divider"></li>
+					<li><a href="/admin/modify"><i class="icon-check"></i>修改密码</a></li>
+					<li class="divider"></li>
+					<li><a href="/admin"
+						onclick="return confirm('确认退出吗？');"><i class="icon-key"></i>退出</a>
+					</li>
+				</ul>
+			</li>
+			<li class=""><a title="" href="/admin"
+				onclick="return confirm('确认退出吗？');"><i
+					class="icon icon-share-alt"></i> <span class="text">退出</span> </a></li>
+		</ul>
+	</div>
+
+
+    </body>
+    </html>
