@@ -278,3 +278,24 @@
     50% {transform:translate(30px);opacity:.5;}
     100% {transform:translate(60px);opacity:1;}
 }
+
+
+#picture {
+    width: 32px;
+    height: 32px;
+
+}
+#badge {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;  /* 数值与height相同，使数字垂直居中 */
+    text-align: center;  /* 使数字水平居中 */
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 50%;  /* 使正方形变圆形，矩形变椭圆形 */
+    position:relative ;
+    bottom: 55px;
+    left: 26px;
+}

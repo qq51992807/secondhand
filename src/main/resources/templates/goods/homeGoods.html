@@ -151,7 +151,13 @@
                     <li th:if="${session.cur_user} ne null">
                         <a th:text="${session.cur_user.username}">  </a>
                     </li>
-                    <li><a><img  style="vertical-align:-20%" src="/static/img/message.png"></a></li>
+                    <li class="changemore" th:if="${session.cur_user} ne null">
+                        <a class="changeMoreVertShow()" href="/user/message">
+                            <img  id="picture" style="vertical-align:-20%" src="/static/img/message.png" >
+                            <div id="badge" th:if="${unreadNum!=0}" th:text="${unreadNum}"></div>
+                        </a>
+
+                    </li>
                     <!-- <li class="notification">
                         <i ng-click="showNotificationBox()" class="iconfont"></i>
                     </li> -->

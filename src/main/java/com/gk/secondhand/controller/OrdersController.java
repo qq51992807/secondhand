@@ -1,15 +1,15 @@
 package com.gk.secondhand.controller;
 
-import com.gk.secondhand.entity.Goods;
-import com.gk.secondhand.entity.Orders;
-import com.gk.secondhand.entity.Purse;
-import com.gk.secondhand.entity.User;
+import com.gk.secondhand.entity.*;
 import com.gk.secondhand.service.GoodsService;
 import com.gk.secondhand.service.PurseService;
+import com.gk.secondhand.service.impl.MessageServiceImpl;
 import com.gk.secondhand.service.impl.OrdersServiceImpl;
+import com.gk.secondhand.util.DateUtil;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,7 +31,8 @@ public class OrdersController {
     private GoodsService goodsService;
     @Resource
     private PurseService purseService;
-
+    @Resource
+    private MessageServiceImpl messageService;
 
     ModelAndView mv = new ModelAndView();
 
@@ -59,6 +60,7 @@ public class OrdersController {
      * 提交订单
      */
     @RequestMapping(value = "/addOrders")
+    @Transactional
     public String addorders(HttpServletRequest request,Orders orders) {
         Date d=new Date();//获取时间
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//转换格式
@@ -73,6 +75,16 @@ public class OrdersController {
         ordersService.addOrders(orders);
         Float balance=orders.getOrderPrice();
         purseService.updatePurseOfdel(user_id,balance);
+        //获取message需要的时间格式
+        String t = DateUtil.getNowDate();
+        orders.setGoods(goodsService.getGoodsByPrimaryKey(orders.getGoodsId()));
+        Message message=new Message();
+        System.out.println(orders.toString());
+        message.setUserid(orders.getGoods().getUserId());
+        message.setMessage("您的“"+orders.getGoods().getName()+"”物品已有买家购买，请与买家联系进行发货");
+        message.setMessageData(t);
+        message.setIsRead(0);
+        messageService.noticeBuy(message);
         return "redirect:/orders/myOrders";
     }
 

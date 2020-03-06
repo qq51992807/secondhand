@@ -35,6 +35,8 @@ public class UserController {
     private GoodsServiceImpl goodsService;
     @Autowired
     private ImageServiceImpl imageService;
+    @Autowired
+    private MessageServiceImpl messageService;
 
     /**
      * 用户注册
@@ -56,9 +58,14 @@ public class UserController {
             user1.setGoodsNum(0);
             user1.setStatus((byte) 1);//初始正常状态
             user1.setPower(100);
-            System.out.println(user1);
             userService.addUser(user1);
             purseService.addPurse(user1.getId());// 注册的时候同时生成钱包
+            Message message=new Message();
+            message.setUserid(user1.getId());
+            message.setIsRead(0);
+            message.setMessageData(t);
+            message.setMessage("欢迎使用广科闲置交易平台，你的大学，应更精彩");
+            messageService.noticeBuy(message);
         }
         return "redirect:" + url;
     }
@@ -322,7 +329,23 @@ public class UserController {
 
     }
 
-
+    /**
+     * 消息中心
+     *
+     * @return 返回的model为 goodsAndImage对象
+     */
+    @RequestMapping(value = "/message")
+    public ModelAndView getMessage(HttpServletRequest request) {
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        Integer user_id = cur_user.getId();
+        Purse purse = purseService.getPurseByUserId(user_id);
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("myPurse", purse);
+        List<Message>  list=messageService.checkMessageByUserId(user_id);
+        mv.addObject("messageList",list);
+        mv.setViewName("/user/message");
+        return mv;
+    }
 
 
 }

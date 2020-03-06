@@ -107,8 +107,8 @@
         select
         *
         from goods
-        where id = #{id,jdbcType=INTEGER} and status=1;
-        <include refid="Factor"></include>
+        where id = #{id,jdbcType=INTEGER};
+
     </select>
 
     <select id="selectById" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >

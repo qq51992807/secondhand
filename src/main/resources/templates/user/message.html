@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>订单中心</title>
+<title>消息中心</title>
 <link rel="icon" href="/static/img/logo.jpg" type="image/x-icon" />
 <link rel="stylesheet" href="/static/css/font-awesome.min.css" />
 <link rel="stylesheet" href="/static/css/userhome.css" />
@@ -14,23 +14,20 @@
 <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 
-<script type="text/javascript">
+	<script type="text/javascript">
+		function onread(messageId) {
+			$.ajax({
+				url:"/message/read",
+				data:{"id":messageId},
+				success:function () {
+					location.href='/user/message'
+                },
 
-		function ordersDeliver(orderNum){
-	
-		location.href ='/orders/deliver/'+orderNum
-	
-		alert("发货成功，请送货给对方，并等待确认收货~")
-	}
+			});
+        }
 		
-		function ordersReceipt(orderNum,orderPrice,goodsId){
-			location.href ='/orders/receipt?orderNum='+orderNum+'&orderPrice='+orderPrice+'&goodsId='+goodsId;
-			
-			alert("收货成功，感谢您的信任~")
-		}
+	</script>
 	
-
-</script>
 
 </head>
 <body>
@@ -129,26 +126,12 @@
 
                     描述：订单展示
                 -->
-					<h1 style="text-align: center">订单中心</h1>
+					<h1 style="text-align: center">消息中心</h1>
 					<hr />
 					<div class="share_content">
 
                         <div class="no_share" th:if="${orders ==null  and ordersOfSell ==null}">
-                            <span>没有任何内容，去逛逛其它的吧！</span>
-                        </div>
-
-						<div class="story" th:if="${orders !=null  and ordersOfSell !=null}">
-
 							<div class="container">
-								<!-- Nav tabs -->
-								<ul class="nav nav-tabs" role="tablist" style="width: 46%">
-									<!-- <li class="nav-item"><a class="nav-link active"
-										data-toggle="tab" href="#home">全部订单</a></li> -->
-									<li class="nav-item"><a class="nav-link active" data-toggle="tab"
-										href="#orders_my" >我买的</a></li>
-									<li class="nav-item" ><a class="nav-link" data-toggle="tab"
-										href="#orders_other" >我卖的</a></li>
-								</ul>
 
 								<!-- Tab panes -->
 								<div class="tab-content" style="width: 46%">
@@ -161,85 +144,38 @@
 											magna aliqua.</p>
 										</from>
 									</div> -->
-									<!-- 买家订单中心 -->
+									<!-- 消息中心 -->
 									<div id="orders_my" class="container tab-pane active"
-										style="width: 100%">
-										<br>
+										 style="width: 100%">
+
 										<form class="form-horizontal" role="form">
 											<div class="table-responsive">
 												<table class="table">
 													<thead>
 													<tr>
 													</tr>
-														<tr>
-														  <th >订单编号</th>
-															<th>名称</th>
-															<th>价格</th>
-															<th>备注</th>
-															<th>操作</th>
-														</tr>
+													<tr>
+														<th style="text-align:center">消息内容</th>
+														<th  style="text-align:center">消息时间</th>
+
+														<th  style="text-align:center">操作</th>
+													</tr>
 													</thead>
 													<tbody>
 
-                                            	<tr th:each="items:${orders}">
-															<td th:text="${items.orderNum}"></td>
-															<td th:text="${items.goods.name}"></td>
-															<td th:text="${items.goods.price}"></td>
-															<td th:text="${items.orderInformation}"></td>
-															<td>
-																<input type="button" value="待发货" class="btn btn-info" th:if="${items.orderState==1}"/>
-															<input  th:if="${items.orderState==2}" type="button" value="收&nbsp&nbsp&nbsp&nbsp货" th:onclick="'ordersReceipt('+${items.orderNum}+','+${items.orderPrice}+','+${items.goods.id}+')'" class="btn btn-info" />
-															<input th:if="${items.orderState==3}" type="button" value="已完成" class="btn btn-info"/>
-															</td>
-														</tr>
+													<tr th:each="message:${messageList}">
+														<td th:text="${message.message}"th:if="${message.isRead==0}" style="color:green !important;"></td>
+														<td th:text="${message.message}"th:if="${message.isRead==1}" ></td>
+														<td th:text="${message.messageData} " th:if="${message.isRead==1}"></td>
+														<td th:text="${message.messageData} " th:if="${message.isRead==0}" style="color:green !important;"></td>
 
+
+														<td>
+															<input type="button" value="已读" class="btn btn-info" th:if="${message.isRead}==0" th:onclick="'onread('+${message.id}+')'" />
+															<input type="button" value="删除" class="btn " th:if="${message.isRead}==1" />
+														</td>
+													</tr>
 													</tbody>
-												</table>
-											</div>
-
-										</form>
-									</div>
-									<!-- 卖家订单中心 -->
-									<div id="orders_other" class="container tab-pane fade"
-										style="width: 100%">
-										<br>
-										<form class="form-horizontal" role="form">
-											<div class="table-responsive">
-												<table class="table">
-													<thead>
-													<tr>
-													</tr>
-														<tr class="text-center">
-														  <th>订单编号</th>
-															<th>名称</th>
-															<th>价格</th>
-															<th>备注</th>
-															<th>操作</th>
-														</tr>
-													</thead>
-													<tbody>
-
-                                            		<tr th:each="items:${ordersOfSell}">
-															<td th:text="${items.orderNum}"></td>
-															<td th:text="${items.goods.name}">
-
-															</td>
-															<td th:text="${items.goods.price}"></td>
-															<td th:text="${items.orderInformation}"></td>
-															<td>
-															
-
-																<input th:if="${items.orderState==1}" type="button" value="发&nbsp&nbsp&nbsp&nbsp货" th:onclick="'ordersDeliver('+${items.orderNum}+')'" class="btn btn-info"/>
-
-																<input th:if="${items.orderState==2}" type="button" value="待收货"  class="btn btn-info"/>
-
-																<input th:if="${items.orderState==3}" type="button" value="已完成" class="btn btn-info"/>
-															
-															
-															</td>
-													</tr>
-
-												 </tbody>
 												</table>
 											</div>
 
@@ -247,7 +183,10 @@
 									</div>
 								</div>
 							</div>
-						</div>
+                        </div>
+
+						
+					
 
 
 					</div>

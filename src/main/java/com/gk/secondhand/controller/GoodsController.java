@@ -6,6 +6,7 @@ import com.gk.secondhand.service.impl.*;
 import com.gk.secondhand.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +36,11 @@ public class GoodsController {
     private UserServiceImpl userService;
     @Autowired
     private PurseServiceImpl purseService;
+    @Autowired
+    private MessageServiceImpl messageService;
 
     @RequestMapping(value = "/homeGoods")
-    public String homeGoods(Model m) throws Exception {
+    public String homeGoods(Model m,HttpServletRequest request) throws Exception {
         // 商品种类数量
         int catelogSize = 7;
         // 每个种类显示商品数量
@@ -89,7 +92,13 @@ public class GoodsController {
             }
             String key = "catelog" + "Goods" + i;
            m.addAttribute(key,goodsAndImage);
+
         }
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+       if (cur_user!=null){
+          int unreadNum=messageService.unreadMessage(cur_user.getId());
+          m.addAttribute("unreadNum",unreadNum);
+       }
         //modelAndView.setViewName("goods/homeGoods");
         return "goods/homeGoods";
     }
@@ -227,6 +236,8 @@ public class GoodsController {
      * @return
      */
     @RequestMapping(value = "/addComments",method=RequestMethod.POST)
+    @Transactional
+    @ResponseBody
     public void deleteFocus(HttpServletRequest request,Comments comments) {
         User cur_user = (User)request.getSession().getAttribute("cur_user");
         comments.setUser(cur_user);
@@ -234,6 +245,14 @@ public class GoodsController {
         Date createAt =new Date();
         comments.setCreateAt(sdf.format(createAt));
         goodsService.addComments(comments);
+        String t = DateUtil.getNowDate();
+        Message message=new Message();
+        Goods goods=goodsService.getGoodsByPrimaryKey(comments.getGoods().getId());
+        message.setUserid(goods.getUserId());
+        message.setMessage("您的 "+goods.getName()+" 物品用户 "+cur_user.getUsername()+" 有新的留言了");
+        message.setMessageData(t);
+        message.setIsRead(0);
+        messageService.noticeBuy(message);
 
     }
 
