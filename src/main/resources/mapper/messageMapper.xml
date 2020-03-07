@@ -15,7 +15,7 @@
     </insert>
     <select id="checkMessageByUserId" resultType="Message">
 
-         select * from message  where userid=#{userid} order by message_data desc  limit 10  ;
+         select * from message  where userid=#{userid} order by message_data,isRead  desc limit 10  ;
     </select>
     <select id="unreadMessage" resultType="int">
         select count(*) from message where userid=#{userid} and isRead=0;

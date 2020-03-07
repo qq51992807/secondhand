@@ -10,6 +10,7 @@
     <script type="text/javascript" src="/static/js/materialize.min.js" ></script>
     <script type="text/javascript" src="/static/js/index.bundle.js" ></script>
     <link rel="stylesheet" href="/static/css/materialize-icon.css" />
+    <link rel="stylesheet" href="/static/css/user.css" />
     <script>
         function showLogin() {
             if($("#signup-show").css("display")=='block'){
@@ -85,6 +86,13 @@
                 </li>
                 <li th:if="${session.cur_user} ne null">
                     <a th:text="${session.cur_user.username}">  </a>
+                </li>
+                <li class="changemore" th:if="${session.cur_user} ne null">
+                    <a class="changeMoreVertShow()" href="/user/message">
+                        <img  id="picture" style="vertical-align:-20%" src="/static/img/message.png" >
+                        <div id="badge" th:if="${unreadNum!=0}" th:text="${unreadNum}"></div>
+                    </a>
+
                 </li>
                 <!-- <li class="notification">
                     <i ng-click="showNotificationBox()" class="iconfont"></i>

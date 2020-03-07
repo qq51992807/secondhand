@@ -173,6 +173,11 @@ public class GoodsController {
         m.addAttribute("goodsExtendList", goodsAndImage);
         m.addAttribute("search", str);
         m.addAttribute("catelog", catelog);
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            m.addAttribute("unreadNum",unreadNum);
+        }
         return "/goods/catelogGoods";
     }
 
@@ -184,7 +189,7 @@ public class GoodsController {
      * @throws Exception
      */
     @RequestMapping(value = "/search")
-    public ModelAndView searchGoods(@RequestParam(value = "str", required = false) String str) throws Exception {
+    public ModelAndView searchGoods(@RequestParam(value = "str", required = false) String str,HttpServletRequest request) throws Exception {
         List<Goods> goodsList = goodsService.searchGoods(str, str);
         List<GoodsExtend> goodsExtendList = new ArrayList<GoodsExtend>();
         for (int i = 0; i < goodsList.size(); i++) {
@@ -199,6 +204,11 @@ public class GoodsController {
         modelAndView.addObject("goodsExtendList", goodsExtendList);
         modelAndView.addObject("search", str);
         modelAndView.setViewName("/goods/searchGoods");
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            modelAndView.addObject("unreadNum",unreadNum);
+        }
         return modelAndView;
     }
     /**
@@ -227,6 +237,11 @@ public class GoodsController {
         modelAndView.addObject("search", str);
         modelAndView.addObject("catelog", catelog);
         modelAndView.setViewName("/goods/detailGoods");
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            modelAndView.addObject("unreadNum",unreadNum);
+        }
         return modelAndView;
 
     }
