@@ -40,32 +40,36 @@ public class AdminController {
     }
 
 
-    @RequestMapping(value = "" )
-    public String login(HttpSession session) {
+    @RequestMapping(value = "/logout" )
+    public String login(HttpSession session,HttpServletRequest request) {
         // 清除session
-        session.invalidate();
-        return "admin/login";
+        //session.invalidate();
+        request.getSession().setAttribute("admin", null);
+        return "/admin/login";
     }
-    @RequestMapping(value = "/index")
+
+
+
+    @RequestMapping(value = "/sign")
     public String index(HttpServletRequest request, Admin admins) {
         Admin myadmin = adminService.findAdmin(admins.getPhone(), admins.getPassword());
         if (myadmin != null) {
             request.getSession().setAttribute("admin", myadmin);
-            return "/admin/index";
-        }
-        return "admin/login";
-
-    }
-    @RequestMapping(value = "/indexs")
-    public String indexs(HttpServletRequest request) {
-        Admin admin = (Admin) request.getSession().getAttribute("admin");
-        if (admin != null) {
-            Integer id = admin.getId();
-            Admin myadmin = adminService.findAdminById(id);
-            request.getSession().setAttribute("admin", myadmin);
-            return "/admin/index";
+            return "admin/index";
         }
         return "/admin/login";
+
+    }
+    @RequestMapping(value = "/index")
+    public String indexs(HttpServletRequest request) {
+        Admin admin = (Admin) request.getSession().getAttribute("admin");
+        if (admin == null) {
+           /* Integer id = admin.getId();
+            Admin myadmin = adminService.findAdminById(id);
+            request.getSession().setAttribute("admin", myadmin);*/
+            return "/admin/login";
+        }
+        return "admin/index";
 
     }
 
@@ -106,7 +110,7 @@ public class AdminController {
             modelAndView.setViewName("admin/modify");
             return modelAndView;
         }
-        modelAndView.setViewName("admin/login");
+        modelAndView.setViewName("/admin/login");
         return modelAndView;
     }
 
