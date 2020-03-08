@@ -72,8 +72,12 @@
 			<version>4.1.6</version>
 		</dependency>
 		<!--boot MyBatis 及 插件依赖 -->
-
-
+		<!--shiro与spring的整合-->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.4.0</version>
+		</dependency>
 		<!--<dependency>
          <groupId>org.mybatis.spring.boot</groupId>
          <artifactId>mybatis-spring-boot-starter</artifactId>

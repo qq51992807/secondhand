@@ -41,41 +41,52 @@
             }
         }
         
-        /* $(document).ready(function(){
+        $(document).ready(function() {
             //异步验证
-            $("#phone").blur(function(){
-              var phone=$(this).val();
-              $.ajax({
-    				url:'user/register',
-    				type:'POST',
-    				data:{phone:phone},
-    				dataType:'json',
-    				success:function(json){
-    					if(json.flag){
-    						 $("#errorPhone").html("账号已被注册，请重新输入!");
-    						 $("#register").attr("disabled",true);
-    					}else{
-    						 $("#errorPhone").empty();
-    						 $("#register").attr("disabled",false);
-    					}
-    				},
-    				error:function(){
-    					alert('请求超时或系统出错!');
-    				}
-    			});
-               
-            }); */
-            
-        /* <%--    $("#login_password").blur(function(){
-            	var phone=$("#login_phone").val();
-                var password=$(this).val();
+             $("#phone").blur(function(){
+                var phone=$(this).val();
                 $.ajax({
-      				url:'user/password',
-      				type:'POST',
-      				data:{phone:phone,password:password},
-      				dataType:'json',
-      				success:function(json){
-      				if(json){
+                      url:'/user/register',
+                      type:'POST',
+                      data:{phone:phone},
+                      dataType:'json',
+                      success:function(json){
+                          if(json.flag){
+                               $("#errorPhone").html("账号已被注册，请重新输入!");
+                               $("#register").attr("disabled",true);
+                          }else{
+                               $("#errorPhone").empty();
+                               $("#register").attr("disabled",false);
+                          }
+                      },
+                      error:function(){
+                          alert('请求超时或系统出错!');
+                      }
+                  });
+
+              });
+
+            $("#login_password").focus(function () {
+                $("#loginIn").attr("disabled",false);
+                $("#login_errorPhone").html("");
+                $("#errorPassword").html("");
+            });
+            $("#login_phone").focus(function () {
+                $("#loginIn").attr("disabled",false);
+                $("#login_errorPhone").html("");
+                $("#errorPassword").html("");
+            });
+
+            $("#loginIn").focus(function () {
+
+                var phone = $("#login_phone").val();
+                var password = $("#login_password").val();
+                $.ajax({
+                    url: '/user/login',
+                    type: 'POST',
+                    data: {phone: phone, password: password},
+                    success: function (json) {
+                        /*if(json){
       					if(json.flag){
       						 $("#errorPassword").html("请核对账号密码，再重新输入!");
       						 $("#loginIn").attr("disabled",true);
@@ -83,24 +94,25 @@
       						 $("#errorPassword").empty();
       						 $("#loginIn").attr("disabled",false);
       					}
-      				}else{
-      					if(json.flag){
-    						 $("#errorPassword").html("请输入的密码有误!");
+      				}else{*/
+      					if(json=="请检查您的密码是否输入正确"){
+    						 $("#errorPassword").html("请检查您的密码是否输入正确!");
     						 $("#loginIn").attr("disabled",true);
-    					}if(json.flag==false){
+    					}if(json=="该用户不存在"){
     						 $("#login_errorPhone").html("您输入的在账号有误!");
     						 $("#loginIn").attr("disabled",true);
     					}
-      				}
+      				/*}*/
       				},
       				error:function(json){
      					alert("系统出错啦")
       				}
-      			});
-                 
-              }); --%>
-            
-        }); */
+                });
+                });
+
+
+        });
+
         
         
     </script>
@@ -194,7 +206,7 @@
                 <a onclick="showLogin()">
                     <div class="col s12 title"></div>
                 </a>
-                <form action="/user/login" method="post" role="form">
+                <form id="loginFrom" method="post" role="form">
                     <div class="input-field col s12">
                         <input type="text" name="phone" id="login_phone" required="required" pattern="^1[0-9]{10}$" class="validate ng-pristine ng-empty ng-invalid ng-invalid-required ng-valid-pattern ng-touched" />
                         <label>手机&nbsp;&nbsp;<div id="login_errorPhone" style="color:red;display:inline;"></div></label>

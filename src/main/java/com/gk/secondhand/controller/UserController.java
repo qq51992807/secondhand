@@ -5,8 +5,15 @@ import com.gk.secondhand.service.UserService;
 import com.gk.secondhand.service.impl.*;
 import com.gk.secondhand.util.DateUtil;
 import com.gk.secondhand.util.MD5;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -45,6 +52,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/addUser")
+    @Transactional
     public String addUser(HttpServletRequest request, @ModelAttribute("user") User user1) {
         String url = request.getHeader("Referer");
         User user = userService.getUserByPhone(user1.getPhone());
@@ -66,6 +74,15 @@ public class UserController {
             message.setMessageData(t);
             message.setMessage("欢迎使用广科闲置交易平台，你的大学，应更精彩");
             messageService.noticeBuy(message);
+
+            //获取subject
+            Subject subject=SecurityUtils.getSubject();
+            //封装用户数据
+            UsernamePasswordToken token=new UsernamePasswordToken(user1.getPhone(),str);
+            //执行登录方法
+            subject.login(token);
+
+            request.getSession().setAttribute("cur_user", user1);
         }
         return "redirect:" + url;
     }
@@ -95,20 +112,43 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/login")
-    public ModelAndView loginValidate(HttpServletRequest request, HttpServletResponse response, User user,
+    @ResponseBody
+    public String loginValidate( HttpServletRequest request, HttpServletResponse response, User user,
                                       ModelMap modelMap) {
+        ModelAndView m=new ModelAndView();
         User cur_user = userService.getUserByPhone(user.getPhone());
         String url = request.getHeader("Referer");
-        if (cur_user != null) {
+        String pwd = MD5.md5(user.getPassword());
+       /* if (cur_user != null) {
             String pwd = MD5.md5(user.getPassword());
             if (pwd.equals(cur_user.getPassword())) {
-                if(cur_user.getStatus()==1) {
-                    request.getSession().setAttribute("cur_user", cur_user);
-                    return new ModelAndView("redirect:" + url);
-                }
+                if(cur_user.getStatus()==1) {*/
+                    //获取subject
+                    Subject subject=SecurityUtils.getSubject();
+                    //封装用户数据
+                    UsernamePasswordToken token=new UsernamePasswordToken(user.getPhone(),pwd);
+                    //执行登录方法
+                    try {
+                        subject.login(token);
+                        m.addObject("msg","登录成功");
+                        request.getSession().setAttribute("cur_user", cur_user);
+                        return "登录成功";
+
+                    }catch (UnknownAccountException e){
+                        //用户名不存在
+                        m.addObject("msg","该用户不存在");
+                        return "该用户不存在";
+                    }catch (IncorrectCredentialsException e){
+                        //密码错误
+                        m.addObject("msg","请检查您的密码是否输入正确");
+                        return "请检查您的密码是否输入正确";
+                    }
+
+
+    /*            }
             }
-        }
-        return new ModelAndView("redirect:" + url);
+        }*/
+
     }
 
     /**
@@ -120,6 +160,8 @@ public class UserController {
     @RequestMapping(value = "/logout")
     public String logout(HttpServletRequest request) {
         request.getSession().setAttribute("cur_user", null);
+        Subject subject=SecurityUtils.getSubject();
+        subject.logout();
         return "redirect:/goods/homeGoods";
     }
     /**
