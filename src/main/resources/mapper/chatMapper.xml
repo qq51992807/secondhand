@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gk.secondhand.dao.ChatDao" >
+
+    <select id="selectHistoryList" resultType="Chat">
+      select * from chat where uid=#{uid} and bid=#{bid} order by sendData asc
+    </select>
+
+    <insert id="sendChat" parameterType="Chat" useGeneratedKeys="true" keyProperty="id">
+        insert into chat (bid,uid,content,status,sendData,sendUser) values (#{bid},#{uid},#{content},#{status},#{sendData},#{sendUser})
+    </insert>
+    <update id="readHistory">
+        update chat set status=1 where uid=#{uid} and bid=#{bid}
+    </update>
+
+</mapper>

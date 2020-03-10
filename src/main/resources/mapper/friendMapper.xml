@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gk.secondhand.dao.FriendDao" >
+<select id="findFriendById" resultType="Friend">
+    select * from friend where uid=#{id}
+</select>
+    <update id="addNoReadNum" >
+        update friend set noReadNum=noReadNum+1 where uid=#{uid} and bid=#{bid}
+    </update>
+    <insert id="addFriend" useGeneratedKeys="true" keyProperty="id">
+        insert into friend (bid,uid,bidName,noReadNum) values(#{bid},#{uid},#{bidName},#{noReadNum})
+    </insert>
+    <select id="selectFriendList" resultType="Friend">
+        select * from friend where uid=#{uid} and bid=#{bid}
+    </select>
+    <update id="readMessage">
+        update friend set noReadNum=0 where uid=#{uid} and bid=#{bid}
+    </update>
+    <select id="ChatNum" resultType="int">
+        select sum(noReadNum) from friend where uid=#{uid}
+    </select>
+</mapper>

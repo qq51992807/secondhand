@@ -3,6 +3,8 @@ package com.gk.secondhand.controller;
 import com.gk.secondhand.entity.*;
 import com.gk.secondhand.service.GoodsService;
 import com.gk.secondhand.service.PurseService;
+import com.gk.secondhand.service.impl.ChatServiceImpl;
+import com.gk.secondhand.service.impl.FriendServiceImpl;
 import com.gk.secondhand.service.impl.MessageServiceImpl;
 import com.gk.secondhand.service.impl.OrdersServiceImpl;
 import com.gk.secondhand.util.DateUtil;
@@ -33,6 +35,10 @@ public class OrdersController {
     private PurseService purseService;
     @Resource
     private MessageServiceImpl messageService;
+    @Resource
+    private FriendServiceImpl friendService;
+    @Resource
+    private ChatServiceImpl chatService;
 
     ModelAndView mv = new ModelAndView();
 
@@ -52,6 +58,14 @@ public class OrdersController {
         mv.addObject("orders",ordersList1);
         mv.addObject("myPurse",myPurse);
         mv.setViewName("/user/orders");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
 

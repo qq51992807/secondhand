@@ -38,6 +38,8 @@ public class GoodsController {
     private PurseServiceImpl purseService;
     @Autowired
     private MessageServiceImpl messageService;
+    @Autowired
+    private FriendServiceImpl friendService;
 
     @RequestMapping(value = "/homeGoods")
     public String homeGoods(Model m,HttpServletRequest request) throws Exception {
@@ -98,7 +100,18 @@ public class GoodsController {
        if (cur_user!=null){
           int unreadNum=messageService.unreadMessage(cur_user.getId());
           m.addAttribute("unreadNum",unreadNum);
+           List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+           m.addAttribute("friendList",friendList);
+           int chatNum=friendService.ChatNum(cur_user.getId());
+           m.addAttribute("chatNum",chatNum);
        }
+
+
+
+
+
+
+
         //modelAndView.setViewName("goods/homeGoods");
         return "goods/homeGoods";
     }
@@ -137,6 +150,15 @@ public class GoodsController {
        m.addAttribute("goodsExtendList", goodsExtendList);
        m.addAttribute("catelog", catelog);
        m.addAttribute("search", str);
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            m.addAttribute("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            m.addAttribute("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            m.addAttribute("chatNum",chatNum);
+        }
         return "/goods/catelogGoods";
     }
 
@@ -173,10 +195,17 @@ public class GoodsController {
         m.addAttribute("goodsExtendList", goodsAndImage);
         m.addAttribute("search", str);
         m.addAttribute("catelog", catelog);
+
+
+
         User cur_user = (User) request.getSession().getAttribute("cur_user");
         if (cur_user!=null){
             int unreadNum=messageService.unreadMessage(cur_user.getId());
             m.addAttribute("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            m.addAttribute("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            m.addAttribute("chatNum",chatNum);
         }
         return "/goods/catelogGoods";
     }
@@ -208,6 +237,10 @@ public class GoodsController {
         if (cur_user!=null){
             int unreadNum=messageService.unreadMessage(cur_user.getId());
             modelAndView.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            modelAndView.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            modelAndView.addObject("chatNum",chatNum);
         }
         return modelAndView;
     }
@@ -241,6 +274,10 @@ public class GoodsController {
         if (cur_user!=null){
             int unreadNum=messageService.unreadMessage(cur_user.getId());
             modelAndView.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            modelAndView.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            modelAndView.addObject("chatNum",chatNum);
         }
         return modelAndView;
 
@@ -289,6 +326,14 @@ public class GoodsController {
         ModelAndView mv = new ModelAndView();
         mv.addObject("myPurse", myPurse);
         mv.setViewName("/goods/pubGoods");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
 
@@ -379,6 +424,14 @@ public class GoodsController {
         // 将商品信息添加到model
         modelAndView.addObject("goodsExtend", goodsExtend);
         modelAndView.setViewName("/goods/editGoods");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            modelAndView.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            modelAndView.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            modelAndView.addObject("chatNum",chatNum);
+        }
         return modelAndView;
     }
     /**
@@ -455,6 +508,14 @@ public class GoodsController {
         modelAndView.addObject("goodsExtend", goodsExtend);
         modelAndView.addObject("myPurse",myPurse);
         modelAndView.setViewName("/user/pay");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            modelAndView.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            modelAndView.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            modelAndView.addObject("chatNum",chatNum);
+        }
         return modelAndView;
     }
 

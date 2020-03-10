@@ -44,7 +44,8 @@ public class UserController {
     private ImageServiceImpl imageService;
     @Autowired
     private MessageServiceImpl messageService;
-
+    @Autowired
+    private FriendServiceImpl friendService;
     /**
      * 用户注册
      *
@@ -182,6 +183,14 @@ public class UserController {
         mv.addObject("myPurse", myPurse);
         mv.addObject("users", users);
         mv.setViewName("/user/home");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
     /**
@@ -235,6 +244,14 @@ public class UserController {
         ModelAndView mv = new ModelAndView();
         mv.addObject("myPurse", myPurse);
         mv.setViewName("/user/basic");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
     /**
@@ -264,6 +281,14 @@ public class UserController {
 
         mv.addObject("myPurse", myPurse);
         mv.setViewName("/user/focus");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
 
@@ -329,6 +354,14 @@ public class UserController {
         mv.addObject("goodsAndImage", goodsAndImage);
         mv.setViewName("/user/goods");
         mv.addObject("myPurse", myPurse);
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
     /**
@@ -344,6 +377,14 @@ public class UserController {
         ModelAndView mv = new ModelAndView();
         mv.addObject("myPurse", purse);
         mv.setViewName("/user/purse");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
 
@@ -386,6 +427,14 @@ public class UserController {
         List<Message>  list=messageService.checkMessageByUserId(user_id);
         mv.addObject("messageList",list);
         mv.setViewName("/user/message");
+        if (cur_user!=null){
+            int unreadNum=messageService.unreadMessage(cur_user.getId());
+            mv.addObject("unreadNum",unreadNum);
+            List<Friend> friendList=friendService.findFriendById(cur_user.getId());
+            mv.addObject("friendList",friendList);
+            int chatNum=friendService.ChatNum(cur_user.getId());
+            mv.addObject("chatNum",chatNum);
+        }
         return mv;
     }
 
