@@ -182,7 +182,7 @@
     <div class="chatBtn">
         <i class="iconfont1 icon-xiaoxi1"></i>
     </div>
-    <div th:if="${chatNum} ne 0 " class="chat-message-num"><p  th:text="${chatNum}"></p></div>
+    <div th:if="${chatNum} ne 0 " class="chat-message-num" style="height: 18px"><p  th:text="${chatNum}"></p></div>
     <div class="chatBox" ref="chatBox" style="display: none;">
         <div class="chatBox-head">
             <div class="chatBox-head-one" >
@@ -209,7 +209,7 @@
                         <p th:class="${friend.bid}" th:text="${friend.getBidName()}"></p>
                         <input type="hidden" th:id="'chat'+${friend.bid}" th:value="${friend.bid}" >
                     </div>
-                    <div class="message-num"><p th:if="${friend.noReadNum} ne 0" th:text="${friend.noReadNum}"></p></div>
+                    <div class="message-num"><p th:if="${friend.noReadNum} ne 0" th:text="${friend.noReadNum}" style="height: 4px"></p></div>
                 </div>
             </div>
             <div class="chatBox-kuang" ref="chatBoxkuang">

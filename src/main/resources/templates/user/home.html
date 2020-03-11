@@ -30,6 +30,7 @@
 					$('#myviewform').find("input[name='qq']").val(json.qq);
 					$('#myviewform').find("input[name='power']").val(json.power);
 					$('#myviewform').find("input[name='createAt']").val(json.createAt);
+                    $('#myviewform').find("input[name='userId']").val(json.id);
 					$('#viewModal').modal('toggle');
 				}
 			},
@@ -212,7 +213,7 @@
 
 
                     <div class="yes_share" th:if="${notice} ne null">
-                    <h1 style="text-align: center;">求购信息</h1><hr>
+                    <h1 style="text-align: center;">交流中心</h1><hr>
 
                          <div th:each="item:${notice}">
                    	 <button type="button" class="btn btn-info" th:onclick="'viewPersonal('+${item.user.id}+')'" style="background-color: #c6f5f4;border:0px;outline:none;"><a th:text="${item.user.username}"></a></button>
@@ -264,7 +265,7 @@
 	          <div class="form-group">
 	            <label for="recipient-name" class="control-label col-sm-2" >名称:</label>
 	            <div class="col-sm-10">
-	            <input type="text" class="form-control" id="message-text" name="username" readonly/>
+	            <input type="text" class="form-control" id="message-text" name="username"  readonly/>
 	          </div>
 	          </div>
 	          <div class="form-group">
@@ -291,20 +292,145 @@
 	            <input type="text" class="form-control" id="message-text" name="createAt" readonly/>
 	          </div>
 	           </div>
+                 <input type="hidden" name="userId">
 	        </form>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" style="float:left" id="startChatUser" name="startChatUser" onclick="startChat()" >私信</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
 
+<script>
+    function startChat() {
+        var id =$("input[name='userId']").val();
+        var name = $("input[name='username']").val();
+        $.ajax({
+            async: false,
+            url:"/chat/startChat",
+            type: 'POST',
+            data: {id: id, name: name},
+        success: function (data) {
+                if(data=="oneself"){
+                    alert("这个是您自己发布的消息哦！暂不可对自己私信")
+                }
+                if(data=="exist"){
+                    showChat1(id);
+                }
+                if(data=="success"){
+                    var html=document.getElementById("chatBox-list").innerHTML;
+                    document.getElementById("chatBox-list").innerHTML=html+" <div class=\"chat-list-people\" onclick=\"showChat(" +
+                        id +
+                        ")\" >\n" +
+                        "                    <div><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n" +
+                        "                    <div class=\"chat-name\">\n" +
+                        "                        <p class=\"" +
+                        id +
+                        "\">" +
+                         name +
+                        "</p>\n<input type=\"hidden\" id=\"chat" +
+                        id +
+                        "\" value=\"" +
+                        id +
+                        "\" >" +
+                        "                    </div>\n" +
+                        "                </div>"
+                    showChat1(id);
+            }
+        }
+        })
+    }
+    function showChat1(bid) {
+        document.getElementById("chatBox-content-demo").innerHTML="";
+        $.ajax({
+            async: false,
+            url:'/chat/chatHistory',
+            type:'POST',
+            data:{bid:bid},
+            success:function(data){
+                var arr=data.historyList;
+                for(var i=0;i<data.historyList.length;i++){
+                    var html=document.getElementById("chatBox-content-demo").innerHTML;
+                    if(arr[i].sendUser=="left"){
+                        document.getElementById("chatBox-content-demo").innerHTML=html+"<div class=\"clearfloat\">\n" +
+                            "        <div class=\"author-name\">\n" +
+
+                            "        <small class=\"chat-date\">" +
+                            arr[i].sendData +
+                            "</small>\n" +
+                            "    </div>\n" +
+                            "    <div class=\"" +
+                            arr[i].sendUser +
+                            "\">\n" +
+                            " <div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n"+
+                            "       <div class=\"chat-message\">\n" +
+                            arr[i].content+
+                            "       \n" +
+                            "        </div>\n" +
+                            "        </div>\n" +
+                            "        </div>"
+                    }
+                    if(arr[i].sendUser=="right"){
+                        document.getElementById("chatBox-content-demo").innerHTML=html+"<div class=\"clearfloat\">\n" +
+                            "        <div class=\"author-name\">\n" +
+                            "        <small class=\"chat-date\">" +
+                            arr[i].sendData +
+                            "</small>\n" +
+                            "    </div>\n" +
+                            "    <div class=\"" +
+                            arr[i].sendUser +
+                            "\">\n" +
+                            "       <div class=\"chat-message\">\n" +
+                            arr[i].content+
+                            "       \n" +
+                            "        </div>\n" +
+                            " <div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n"+
+                            "        </div>\n" +
+                            "        </div>"
+                    }
+
+
+                }
+            },
+            error:function(){
+                alert('请求超时或系统出错!');
+            }
+        });
+        var n = $(".chat-list-people").index();
+        $(".chatBox").toggle();
+        if($(".chatBox-head-two").toggle().is(':hidden')){
+            $(".chatBox-head-two").toggle();
+        }else{
+            $(".chatBox-head-one").toggle();
+        }
+
+        if($(".chatBox-kuang").toggle().is(":hidden")){
+            $(".chatBox-kuang").fadeToggle();
+        }else{
+            $(".chatBox-list").fadeToggle();
+        }
+
+
+        //传名字
+        $(".ChatInfoName").text($(".chat-list-people").children(".chat-name").children("."+bid).html());
+        //传头像
+        $(".ChatInfoHead>img").attr("src", $(".chat-list-people").children().eq(0).children("img").attr("src"));
+        //传用户聊天对象id
+        document.getElementById("bid").value=document.getElementById("chat"+bid).value;
+        //聊天框默认最底部
+        $(document).ready(function () {
+            $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+        });
+    }
+</script>
+
 <div class="chatContainer" style="z-index: 999" th:if="${session.cur_user} ne null">
     <div class="chatBtn">
         <i class="iconfont1 icon-xiaoxi1"></i>
     </div>
-    <div th:if="${chatNum} ne 0 " class="chat-message-num"><p  th:text="${chatNum}"></p></div>
+    <div th:if="${chatNum} ne 0 " class="chat-message-num" style="height: 18px"><p  th:text="${chatNum}"></p></div>
     <div class="chatBox" ref="chatBox" style="display: none;">
         <div class="chatBox-head">
             <div class="chatBox-head-one" >
@@ -324,14 +450,14 @@
             </div>
         </div>
         <div class="chatBox-info">
-            <div class="chatBox-list" ref="chatBoxlist">
+            <div class="chatBox-list" ref="chatBoxlist" id="chatBox-list">
                 <div class="chat-list-people" th:each="friend:${friendList}" th:onclick="showChat( [[${friend.bid}]])">
                     <div><img src="/static/img/icon01.png" alt="头像"/></div>
                     <div class="chat-name">
                         <p th:class="${friend.bid}" th:text="${friend.getBidName()}"></p>
                         <input type="hidden" th:id="'chat'+${friend.bid}" th:value="${friend.bid}" >
                     </div>
-                    <div class="message-num"><p th:if="${friend.noReadNum} ne 0" th:text="${friend.noReadNum}"></p></div>
+                    <div class="message-num"  ><p th:if="${friend.noReadNum} ne 0" th:text="${friend.noReadNum}" style="height: 4px"></p></div>
                 </div>
             </div>
             <div class="chatBox-kuang" ref="chatBoxkuang">
@@ -584,7 +710,7 @@
             $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
                 "<div class=\"author-name\"><small class=\"chat-date\">2017-12-02 14:26:58</small> </div> " +
                 "<div class=\"right\"> <div class=\"chat-message\"> " + bq + " </div> " +
-                "<div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div> </div> </div>");
+                "<div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\" /></div> </div> </div>");
             //发送后关闭表情框
             $(".biaoqing-photo").toggle();
             //聊天框默认最底部
@@ -603,9 +729,9 @@
         reader.onload = function (evt) {
             var images = evt.target.result;
             $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
-                "<div class=\"author-name\"><small class=\"chat-date\">2017-12-02 14:26:58</small> </div> " +
+                "<div class=\"author-name\"><small class=\"chat-date\">2020-03-02 14:26:58</small> </div> " +
                 "<div class=\"right\"> <div class=\"chat-message\"><img src=" + images + "></div> " +
-                "<div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div> </div> </div>");
+                "<div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\" /></div> </div> </div>");
             //聊天框默认最底部
             $(document).ready(function () {
                 $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);

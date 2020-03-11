@@ -179,6 +179,8 @@ public class UserController {
         Purse myPurse = purseService.getPurseByUserId(userId);
         List<User> users=userService.getUserOrderByDate(size);
         List<Notice> notice=noticeService.getNoticeList();
+        System.out.println(users.toString());
+        System.out.println(notice.toString());
         mv.addObject("notice", notice);
         mv.addObject("myPurse", myPurse);
         mv.addObject("users", users);

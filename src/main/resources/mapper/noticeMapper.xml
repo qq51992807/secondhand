@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.gk.secondhand.dao.NoticeDao" >
     <resultMap id="BaseResultMap" type="Notice" >
-        <id column="id" property="id" jdbcType="INTEGER" />
         <result column="create_at" property="createAt" jdbcType="VARCHAR" />
         <result column="context" property="context" jdbcType="LONGVARCHAR" />
         <result column="status" property="status" jdbcType="TINYINT" />
@@ -21,7 +20,7 @@
         <result column="status" property="status" jdbcType="TINYINT" />
     </resultMap>
     <select id="getNoticeList" resultMap="BaseResultMap">
-     select * from notice n,user u where n.user_id=u.id order by n.create_at desc
+     select n.create_at,context,n.status,u.id,phone,username,password ,QQ ,u.create_at,goods_num,power,last_login,u.status from notice n,user u where n.user_id=u.id order by n.create_at desc
   </select>
     <insert id="insertSelective" parameterType="Notice" >
 	 insert into notice(id,user_id,create_at,context,status) values(#{id},#{user.id},#{createAt},#{context},#{status})

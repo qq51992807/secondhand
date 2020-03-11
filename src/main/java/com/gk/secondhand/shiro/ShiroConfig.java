@@ -35,6 +35,7 @@ public class ShiroConfig {
         filterMap.put("/user/addUser","anon");
         filterMap.put("/user/register","anon");
         filterMap.put("/user/**","authc");
+        filterMap.put("/chat/**","anon");
         filterMap.put("/orders/**","authc");
 
 

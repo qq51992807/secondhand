@@ -148,6 +148,126 @@
     function  toPay(id) {
     	window.location.href = '/goods/buyId/'+id
     }
+
+    function startChat(id,name){
+        $.ajax({
+            async: false,
+            url: '/chat/startChat',
+            type: 'POST',
+            data: {id:id,name:name},
+            success: function (data) {
+                if(data=="exist"){
+                    showChat1(id);
+                }
+                if(data=="exist"){
+                    showChat1(id);
+                }
+                if(data=="success"){
+                    var html=document.getElementById("chatBox-list").innerHTML;
+                    document.getElementById("chatBox-list").innerHTML=html+" <div class=\"chat-list-people\" onclick=\"showChat(" +
+                        id +
+                        ")\" >\n" +
+                        "                    <div><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n" +
+                        "                    <div class=\"chat-name\">\n" +
+                        "                        <p class=\"" +
+                        id +
+                        "\">" +
+                        name +
+                        "</p>\n<input type=\"hidden\" id=\"chat" +
+                        id +
+                        "\" value=\"" +
+                        id +
+                        "\" >" +
+                        "                    </div>\n" +
+                        "                </div>"
+                    showChat1(id);
+                }
+            }
+        });
+
+    }
+    function showChat1(bid) {
+        document.getElementById("chatBox-content-demo").innerHTML="";
+        $.ajax({
+            async: false,
+            url:'/chat/chatHistory',
+            type:'POST',
+            data:{bid:bid},
+            success:function(data){
+                var arr=data.historyList;
+                for(var i=0;i<data.historyList.length;i++){
+                    var html=document.getElementById("chatBox-content-demo").innerHTML;
+                    if(arr[i].sendUser=="left"){
+                        document.getElementById("chatBox-content-demo").innerHTML=html+"<div class=\"clearfloat\">\n" +
+                            "        <div class=\"author-name\">\n" +
+
+                            "        <small class=\"chat-date\">" +
+                            arr[i].sendData +
+                            "</small>\n" +
+                            "    </div>\n" +
+                            "    <div class=\"" +
+                            arr[i].sendUser +
+                            "\">\n" +
+                            " <div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n"+
+                            "       <div class=\"chat-message\">\n" +
+                            arr[i].content+
+                            "       \n" +
+                            "        </div>\n" +
+                            "        </div>\n" +
+                            "        </div>"
+                    }
+                    if(arr[i].sendUser=="right"){
+                        document.getElementById("chatBox-content-demo").innerHTML=html+"<div class=\"clearfloat\">\n" +
+                            "        <div class=\"author-name\">\n" +
+                            "        <small class=\"chat-date\">" +
+                            arr[i].sendData +
+                            "</small>\n" +
+                            "    </div>\n" +
+                            "    <div class=\"" +
+                            arr[i].sendUser +
+                            "\">\n" +
+                            "       <div class=\"chat-message\">\n" +
+                            arr[i].content+
+                            "       \n" +
+                            "        </div>\n" +
+                            " <div class=\"chat-avatars\"><img src=\"/static/img/icon01.png\" alt=\"头像\"/></div>\n"+
+                            "        </div>\n" +
+                            "        </div>"
+                    }
+
+
+                }
+            },
+            error:function(){
+                alert('请求超时或系统出错!');
+            }
+        });
+        var n = $(".chat-list-people").index();
+        $(".chatBox").toggle();
+        if($(".chatBox-head-two").toggle().is(':hidden')){
+            $(".chatBox-head-two").toggle();
+        }else{
+            $(".chatBox-head-one").toggle();
+        }
+
+        if($(".chatBox-kuang").toggle().is(":hidden")){
+            $(".chatBox-kuang").fadeToggle();
+        }else{
+            $(".chatBox-list").fadeToggle();
+        }
+
+
+        //传名字
+        $(".ChatInfoName").text($(".chat-list-people").children(".chat-name").children("."+bid).html());
+        //传头像
+        $(".ChatInfoHead>img").attr("src", $(".chat-list-people").children().eq(0).children("img").attr("src"));
+        //传用户聊天对象id
+        document.getElementById("bid").value=document.getElementById("chat"+bid).value;
+        //聊天框默认最底部
+        $(document).ready(function () {
+            $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+        });
+    }
 	
     </script>
     
@@ -410,6 +530,8 @@
 
                <input  th:if="${session.cur_user.id} ne ${goodsExtend.goods.userId}" type="button" value="在线支付"  class="blue lighten-1 waves-effect waves-light btn" id="btn_buy" th:onclick="'toPay('+${goodsExtend.goods.id}+')'"></input>
 
+                    <input  th:if="${session.cur_user.id} ne ${goodsExtend.goods.userId}" type="button" value="私信卖家"  class="blue lighten-1 waves-effect waves-light btn" id="start_chat" th:onclick="startChat([[${goodsExtend.goods.userId}]],[[${seller.username}]])"></input>
+
                 </div>
                 
             </div>
@@ -517,7 +639,7 @@ function addComments(){
             </div>
         </div>
         <div class="chatBox-info">
-            <div class="chatBox-list" ref="chatBoxlist">
+            <div class="chatBox-list" ref="chatBoxlist" id="chatBox-list">
                 <div class="chat-list-people" th:each="friend:${friendList}" th:onclick="showChat( [[${friend.bid}]])">
                     <div><img src="/static/img/icon01.png" alt="头像"/></div>
                     <div class="chat-name">

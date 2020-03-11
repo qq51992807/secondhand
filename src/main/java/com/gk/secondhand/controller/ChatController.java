@@ -44,6 +44,7 @@ public class ChatController {
     @ResponseBody
     @Transactional
     public Chat sendChat(HttpServletRequest request,int bid,String textContent){
+        System.out.println(bid);
         Date d=new Date();//获取时间
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//转换格式
         User cur_user = (User) request.getSession().getAttribute("cur_user");
@@ -75,7 +76,50 @@ public class ChatController {
             friendService.addFriend(newFriend);
         }
         return chat;
+    }
 
+    @RequestMapping("startChat2")
+    @ResponseBody
+    @Transactional
+    public String startChat2(HttpServletRequest request,int id,String name){
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        //给发送的对象增加未读标记
+        Friend friend=friendService.selectFriendList(cur_user.getId(),id);
+        if(friend!=null){
+            return "exist";
+        }else{
+            Friend newFriend=new Friend();
+            newFriend.setBid(id);
+            newFriend.setUid(cur_user.getId());
+            newFriend.setBidName(cur_user.getUsername());
+            newFriend.setNoReadNum(0);
+            friendService.addFriend(newFriend);
+        }
+        return "exist";
+    }
+    @RequestMapping("startChat")
+    @ResponseBody
+    @Transactional
+    public String startChat(HttpServletRequest request,int id,String name){
+        User cur_user = (User) request.getSession().getAttribute("cur_user");
+        //判断当前用户与聊天对象是否同一个
+        if(cur_user.getId()==id){
+            return "oneself";
+        }
+        //给发送的对象增加未读标记
+        Friend friend=friendService.selectFriendList(cur_user.getId(),id);
+        System.out.println(friend);
+        if(friend!=null){
+            return "exist";
+        }else{
+            Friend newFriend=new Friend();
+            newFriend.setBid(id);
+            newFriend.setUid(cur_user.getId());
+            newFriend.setBidName(name);
+            newFriend.setNoReadNum(0);
+            friendService.addFriend(newFriend);
+            return "success";
+        }
 
     }
 }
